@@ -11,13 +11,11 @@ devpiserver_hookimpl = HookimplMarker("devpiserver")
 def devpiserver_pyramid_configure(config, pyramid_config):
     # by using include, the package name doesn't need to be set explicitly
     # for registrations of static views etc
-    pyramid_config.include('devpi_json_info')
+    pyramid_config.include("devpi_json_info")
 
 
 def includeme(config):
-    config.add_route(
-        "json_info",
-        "/{user}/{index}/{project}/json")
+    config.add_route("json_info", "/{user}/{index}/{project}/json")
     config.scan()
 
 
@@ -25,15 +23,16 @@ def includeme(config):
     route_name="json_info",
     accept="application/json",
     request_method="GET",
-    renderer='json')
+    renderer="json",
+)
 def json_info_view(context, request):
     baseurl = URL(request.application_url).asdir()
     version = context.stage.get_latest_version(context.project, stable=True)
-    info = get_mutable_deepcopy(
-        context.stage.get_versiondata(context.project, version))
-    info.pop('+elinks', None)
+    info = get_mutable_deepcopy(context.stage.get_versiondata(context.project, version))
+    info.pop("+elinks", None)
     result = dict(info=info, releases={})
     for release in context.stage.get_releaselinks(context.project):
-        result['releases'].setdefault(release.version, []).append(dict(
-            url=baseurl.joinpath(release.relpath).url))
+        result["releases"].setdefault(release.version, []).append(
+            dict(url=baseurl.joinpath(release.relpath).url)
+        )
     return result
