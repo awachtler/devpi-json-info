@@ -3,7 +3,7 @@ from devpi_server.readonly import get_mutable_deepcopy
 from pluggy import HookimplMarker
 from pyramid.view import view_config
 
-
+__version__ = "0.1.0"
 devpiserver_hookimpl = HookimplMarker("devpiserver")
 
 
