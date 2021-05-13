@@ -33,9 +33,21 @@ def json_info_view(context, request):
     if not info:
         abort(request, 404, 'no info found')
     info.pop("+elinks", None)
+    info["project_urls"] = convert_project_urls_to_dict(info.get("project_urls"))
     result = dict(info=info, releases={})
     for release in context.stage.get_releaselinks(context.project):
         result["releases"].setdefault(release.version, []).append(
             dict(url=baseurl.joinpath(release.relpath).url)
         )
+    return result
+
+def convert_project_urls_to_dict(project_urls):
+    result = {}
+    if not project_urls:
+        return result
+    for url in project_urls:
+        url_splitted = url.split(",")
+        if len(url_splitted) == 2:
+            key, value = url_splitted
+            result[key.strip()] = value.strip()
     return result
